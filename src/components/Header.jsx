@@ -36,7 +36,7 @@ export default function Header() {
         <a href="#rules"><svg className="icon" aria-hidden="true"><use href="#icon-scroll"/></svg><span>Rules</span></a>
         <a href="#faq"><svg className="icon" aria-hidden="true"><use href="#icon-help"/></svg><span>FAQ</span></a>
         <a href="#contact"><svg className="icon" aria-hidden="true"><use href="#icon-mail"/></svg><span>Contact</span></a>
-        <a href="#register" className="nav-cta"><svg className="icon" aria-hidden="true"><use href="#icon-user-plus"/></svg><span>Register</span></a>
+        <a href="https://forms.gle/Ha8ZwyczG1L3iy3H7" target="_blank" rel="noopener noreferrer" className="nav-cta"><svg className="icon" aria-hidden="true"><use href="#icon-user-plus"/></svg><span>Register</span></a>
       </nav>
     </div>
   </div>
