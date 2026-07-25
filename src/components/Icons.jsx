@@ -95,6 +95,9 @@ export default function Icons() {
     <symbol id="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M6.5 3.5 9 6 7 9c.8 2 2.3 3.5 4.2 4.2L14.4 11l2.5 2.5-1.4 2c-.5.7-1.4 1-2.2.6A14 14 0 0 1 5.9 8.1c-.4-.8-.1-1.7.6-2.2Z"/>
     </symbol>
+    <symbol id="icon-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+    </symbol>
   </defs>
 </svg>
     </>
