@@ -1,0 +1,934 @@
+/* ==========================================================================
+   0. DESIGN TOKENS
+   Every colour / type / spacing decision on the page is derived from
+   this block. Edit here to re-skin the whole page.
+
+   NEW: colours are split into (a) raw brand tokens — the fixed AZADI
+   CANVAS palette, which barely change between themes — and (b) semantic
+   role tokens (--bg-page, --text-primary, etc.) which DO switch under
+   [data-theme="dark"]. Every rule below reads the semantic tokens, so
+   the whole page re-themes from these two blocks alone.
+   ========================================================================== */
+:root{
+  /* --- raw brand colour: AZADI CANVAS palette, kept subtle & elegant --- */
+  --navy:        #172542;
+  --navy-soft:   #2b3b5c;
+  --saffron:     #E07A1E;
+  --saffron-deep:#C4630F;
+  --green:       #1E6B44;
+  --green-deep:  #164F32;
+  --white:       #FFFFFF;
+
+  /* --- YOTTA gradient, sampled from the YOTTA elephant mark (constant across themes) --- */
+  --yotta-gradient: linear-gradient(90deg,#E7423A 0%,#F0872A 20%,#F4C430 40%,#3E9B4F 60%,#1E8C86 80%,#2F5FA8 100%);
+
+  /* --- type (unchanged) --- */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "Space Mono", "Courier New", monospace;
+
+  /* --- rhythm --- */
+  --section-pad: clamp(64px, 9vw, 128px);
+  --radius: 16px;        /* NEW: premium rounded corners for cards      */
+  --radius-sm: 12px;     /* NEW: buttons, chips, badges                 */
+  --radius-lg: 18px;     /* NEW: large CTA / hero panels                */
+  --nav-offset: 96px;    /* NEW: sticky-nav scroll offset               */
+  --t: 320ms ease;       /* NEW: shared transition timing (theme + hover) */
+
+  /* ---- LIGHT MODE semantic roles (default) ---- */
+  --bg-page:        #F4EEDF;  /* soft paper beige — page background   */
+  --bg-card:        #FBF7EC;  /* lighter paper for cards               */
+  --bg-inverse:     var(--navy); /* dark "ink" panels: rewards, footer, nav CTA */
+  --text-primary:   var(--navy);
+  --text-secondary: var(--navy-soft);
+  --text-soft:      #55503f;  /* muted body text on paper              */
+  --text-on-inverse:#F4EEDF;
+  --text-accent-saffron: var(--saffron-deep);
+  --text-accent-green:   var(--green-deep);
+  --border-color:   #DCD2B4;
+  --shadow:         0 18px 40px -18px rgba(23,37,66,0.28), 0 2px 6px rgba(23,37,66,0.06);
+  --shadow-hover:   0 26px 52px -20px rgba(23,37,66,0.34), 0 6px 14px rgba(23,37,66,0.10);
+  --nav-bg:         rgba(244,238,223,0.92);
+  --texture-dot-a:  rgba(23,37,66,0.035);
+  --texture-dot-b:  rgba(23,37,66,0.025);
+}
+
+/* ---- DARK MODE — an elegant ink-and-parchment-by-candlelight variant,
+        not a simple colour inversion. Backgrounds move to a deep,
+        warm-tinted navy (never pure black); ink panels (rewards/footer)
+        go a shade darker still so they keep reading as accents; accent
+        colours are lifted slightly so they stay legible as text. ---- */
+[data-theme="dark"]{
+  --bg-page:        #141F30;
+  --bg-card:        #1B2A40;
+  --bg-inverse:     #0B131F;
+  --text-primary:   #F2ECDC;
+  --text-secondary: #B9C4D9;
+  --text-soft:      #B9AF97;
+  --text-on-inverse:#F2ECDC;
+  --text-accent-saffron: #F2A35C;
+  --text-accent-green:   #74C89B;
+  --border-color:   rgba(242,236,220,0.14);
+  --shadow:         0 20px 46px -18px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-hover:   0 30px 60px -20px rgba(0,0,0,0.6), 0 8px 18px rgba(0,0,0,0.35);
+  --nav-bg:         rgba(20,31,48,0.88);
+  --texture-dot-a:  rgba(242,236,220,0.045);
+  --texture-dot-b:  rgba(242,236,220,0.03);
+}
+
+/* ==========================================================================
+   1. RESET & BASE
+   ========================================================================== */
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+body{
+  margin:0;
+  background:var(--bg-page);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  transition:background-color var(--t), color var(--t);
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+ul{ margin:0; padding:0; list-style:none; }
+h1,h2,h3,h4{ margin:0; font-family:var(--font-display); font-weight:600; color:var(--text-primary); transition:color var(--t); }
+p{ margin:0; }
+button{ font-family:inherit; cursor:pointer; }
+::selection{ background:var(--saffron); color:var(--white); }
+
+/* focus visibility — accessibility floor */
+a:focus-visible, button:focus-visible, summary:focus-visible{
+  outline:2px solid var(--saffron);
+  outline-offset:3px;
+  border-radius:2px;
+}
+
+/* every section is scrollable to without hiding its heading behind the sticky nav */
+section[id]{ scroll-margin-top: var(--nav-offset); }
+
+.wrap{
+  max-width:1140px;
+  margin:0 auto;
+  padding-left:clamp(20px,5vw,48px);
+  padding-right:clamp(20px,5vw,48px);
+}
+
+/* subtle paper-grain texture applied globally via layered gradients (no external image request) */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.5;
+  background-image:
+    radial-gradient(var(--texture-dot-a) 1px, transparent 1px),
+    radial-gradient(var(--texture-dot-b) 1px, transparent 1px);
+  background-size: 3px 3px, 7px 7px;
+  background-position: 0 0, 2px 3px;
+  transition:opacity var(--t);
+}
+
+/* eyebrow label — ticket / stamp voice */
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--text-accent-saffron);
+  transition:color var(--t);
+}
+.eyebrow::before{
+  content:"";
+  width:20px; height:1px;
+  background:var(--text-accent-saffron);
+  transition:background-color var(--t);
+}
+
+/* YOTTA gradient text, reused wherever the word YOTTA appears */
+.yotta-grad{
+  background:var(--yotta-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  font-weight:700;
+}
+
+/* ==========================================================================
+   2. TORN / DECKLED PAPER EDGES  (unchanged technique, now theme-aware)
+   ========================================================================== */
+.torn-top, .torn-bottom{ position:relative; }
+.torn-top::before, .torn-bottom::after{
+  content:"";
+  position:absolute;
+  left:0; right:0;
+  height:14px;
+  background-color:var(--bg-card);
+  transition:background-color var(--t);
+}
+.torn-top::before{
+  top:-13px;
+  clip-path:polygon(0% 100%,2% 30%,5% 90%,8% 20%,12% 80%,16% 10%,20% 70%,24% 25%,28% 95%,32% 15%,36% 75%,40% 30%,44% 90%,48% 10%,52% 70%,56% 20%,60% 85%,64% 15%,68% 75%,72% 30%,76% 90%,80% 10%,84% 70%,88% 25%,92% 95%,96% 15%,100% 100%,100% 100%,0 100%);
+}
+.torn-bottom::after{
+  bottom:-13px;
+  clip-path:polygon(0% 0%,4% 85%,8% 15%,12% 80%,16% 20%,20% 90%,24% 10%,28% 75%,32% 25%,36% 95%,40% 15%,44% 70%,48% 30%,52% 85%,56% 20%,60% 80%,64% 10%,68% 90%,72% 25%,76% 75%,80% 15%,84% 85%,88% 20%,92% 90%,96% 10%,100% 0%,100% 0%,0 0%);
+}
+
+.paper-card{
+  background:var(--bg-card);
+  box-shadow:var(--shadow);
+  border-radius:var(--radius);
+  transition:background-color var(--t), box-shadow var(--t), transform var(--t);
+}
+
+/* perforation row — the ticket-stub signature motif (utility, kept for future use) */
+.perforation{ display:flex; gap:9px; padding:0 18px; }
+.perforation span{
+  width:8px; height:8px;
+  border-radius:50%;
+  background:var(--bg-page);
+  box-shadow:inset 0 1px 2px rgba(23,37,66,0.25);
+  flex:none;
+  transition:background-color var(--t);
+}
+
+/* ==========================================================================
+   ICON SYSTEM
+   A single hidden <svg><symbol> sprite (see body) holds every icon used
+   on the page; every visible icon is a lightweight <use> reference, so
+   there is exactly one copy of each path to maintain.
+   ========================================================================== */
+.icon{
+  width:18px; height:18px;
+  flex:none;
+  fill:none;
+  stroke:currentColor;
+}
+
+/* ==========================================================================
+   3. NAVIGATION
+   ========================================================================== */
+.site-nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:var(--nav-bg);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-color);
+  transition:background-color var(--t), border-color var(--t);
+}
+.nav-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding-top:14px;
+  padding-bottom:14px;
+}
+.nav-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.yotta-badge{
+  width:40px; height:40px;
+  border-radius:var(--radius-sm);
+  background:var(--bg-inverse);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+  flex:none;
+  transition:background-color var(--t);
+}
+.yotta-badge img{ width:100%; height:100%; object-fit:cover; }
+.nav-brand-text{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.14em;
+  line-height:1.3;
+  color:var(--text-secondary);
+  text-transform:uppercase;
+  white-space:nowrap;
+  transition:color var(--t);
+}
+.nav-brand-text strong{
+  display:block;
+  font-size:13px;
+  color:var(--text-primary);
+  transition:color var(--t);
+}
+
+/* right-hand cluster: nav links + theme toggle + hamburger, grouped so the
+   toggle stays visible even when the link list is collapsed on mobile */
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex:none;
+}
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap:clamp(10px,1.4vw,22px);
+  font-size:13.5px;
+  font-weight:600;
+}
+.nav-links a{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 0;
+  color:var(--text-secondary);
+  transition:color 0.2s ease;
+  white-space:nowrap;
+}
+.nav-links a .icon{ width:15px; height:15px; }
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  left:0; right:100%;
+  bottom:-2px;
+  height:2px;
+  background:var(--saffron);
+  transition:right 0.25s ease;
+}
+.nav-links a:hover{ color:var(--text-primary); }
+.nav-links a:hover::after{ right:0; }
+/* active section highlight, set by the scroll-spy script */
+.nav-links a.active{ color:var(--text-primary); }
+.nav-links a.active::after{ right:0; }
+
+.nav-cta{
+  background:var(--bg-inverse);
+  color:var(--text-on-inverse) !important;
+  padding:9px 16px;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  letter-spacing:0.03em;
+  transition:background 0.2s ease, transform 0.2s ease;
+}
+.nav-cta:hover{ background:var(--green-deep); transform:translateY(-1px); }
+.nav-cta::after{ display:none; } /* no underline sweep on the filled CTA */
+
+/* ---- theme toggle switch ---- */
+.theme-toggle{
+  position:relative;
+  width:42px; height:42px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border-color);
+  background:var(--bg-card);
+  display:flex; align-items:center; justify-content:center;
+  flex:none;
+  transition:background-color var(--t), border-color var(--t), transform 0.2s ease;
+}
+.theme-toggle:hover{ transform:translateY(-2px); }
+.theme-toggle .icon{
+  position:absolute;
+  width:19px; height:19px;
+  color:var(--text-accent-saffron);
+  transition:opacity 320ms ease, transform 420ms cubic-bezier(.4,0,.2,1), color var(--t);
+}
+.theme-toggle .icon-moon-ico{ opacity:0; transform:rotate(-70deg) scale(.6); }
+.theme-toggle .icon-sun-ico{ opacity:1; transform:rotate(0) scale(1); }
+[data-theme="dark"] .theme-toggle .icon-sun-ico{ opacity:0; transform:rotate(70deg) scale(.6); }
+[data-theme="dark"] .theme-toggle .icon-moon-ico{ opacity:1; transform:rotate(0) scale(1); }
+
+.nav-toggle{
+  display:none;
+  background:none;
+  border:1px solid var(--text-primary);
+  border-radius:var(--radius-sm);
+  width:40px; height:36px;
+  align-items:center;
+  justify-content:center;
+  flex:none;
+  transition:border-color var(--t);
+}
+.nav-toggle span, .nav-toggle span::before, .nav-toggle span::after{
+  content:"";
+  display:block;
+  width:18px; height:2px;
+  background:var(--text-primary);
+  position:relative;
+  transition:transform 0.2s ease, opacity 0.2s ease, background-color var(--t);
+}
+.nav-toggle span::before{ position:absolute; top:-6px; }
+.nav-toggle span::after{ position:absolute; top:6px; }
+.nav-toggle[aria-expanded="true"] span{ background:transparent; }
+.nav-toggle[aria-expanded="true"] span::before{ top:0; transform:rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span::after{ top:0; transform:rotate(-45deg); }
+
+@media (max-width:960px){
+  .nav-toggle{ display:flex; }
+  .nav-links{
+    position:absolute;
+    top:100%; left:0; right:0;
+    flex-direction:column;
+    align-items:flex-start;
+    background:var(--bg-card);
+    border-bottom:1px solid var(--border-color);
+    padding:18px clamp(20px,5vw,48px) 26px;
+    gap:16px;
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition:max-height 0.3s ease, opacity 0.25s ease, background-color var(--t);
+  }
+  .nav-links.open{ max-height:520px; opacity:1; }
+  .nav-cta{ align-self:flex-start; }
+}
+
+/* ==========================================================================
+   4. HERO
+   ========================================================================== */
+.hero{
+  position:relative;
+  padding-top:calc(var(--section-pad) + 10px);
+  padding-bottom:var(--section-pad);
+  overflow:hidden;
+}
+/* faint tricolour brush arc, redrawn in CSS — echoes the AZADI mark
+   without reusing the logo file as a background element */
+.hero::before{
+  content:"";
+  position:absolute;
+  top:-220px; right:-260px;
+  width:640px; height:640px;
+  border-radius:50%;
+  background:
+    conic-gradient(from 200deg,
+      transparent 0deg,
+      rgba(224,122,30,0.16) 40deg,
+      transparent 90deg,
+      transparent 210deg,
+      rgba(30,107,68,0.16) 260deg,
+      transparent 300deg);
+  filter:blur(2px);
+  z-index:0;
+}
+.hero-inner{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:1.15fr 0.85fr;
+  gap:clamp(30px,5vw,60px);
+  align-items:center;
+}
+.hero-copy .eyebrow{ margin-bottom:18px; }
+.hero-copy h1{
+  font-size:clamp(2.3rem, 4.6vw, 3.6rem);
+  line-height:1.06;
+  letter-spacing:-0.01em;
+  margin-bottom:16px;
+}
+.hero-copy .subtitle{
+  font-family:var(--font-mono);
+  font-size:13px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-accent-green);
+  margin-bottom:22px;
+  display:block;
+  transition:color var(--t);
+}
+.hero-copy .desc{
+  max-width:46ch;
+  color:var(--text-soft);
+  font-size:1.05rem;
+  margin-bottom:32px;
+  transition:color var(--t);
+}
+.hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:14px 24px;
+  border-radius:var(--radius-sm);
+  font-weight:600;
+  font-size:14.5px;
+  letter-spacing:0.02em;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.btn .icon{ width:16px; height:16px; transition:transform 0.25s ease; }
+.btn:hover .icon{ transform:translateX(3px); }
+.btn-primary{
+  background:var(--saffron);
+  color:var(--white);
+  box-shadow:0 10px 22px -10px rgba(224,122,30,0.55);
+}
+.btn-primary:hover{ background:var(--saffron-deep); transform:translateY(-3px); box-shadow:0 16px 30px -12px rgba(224,122,30,0.6); }
+.btn-secondary{
+  background:transparent;
+  color:var(--text-primary);
+  border:1.5px solid var(--text-primary);
+}
+.btn-secondary:hover{ background:var(--bg-inverse); color:var(--text-on-inverse); border-color:var(--bg-inverse); transform:translateY(-3px); }
+
+.hero-mark{
+  position:relative;
+  display:flex;
+  justify-content:center;
+}
+.hero-mark-card{
+  background:var(--bg-card);
+  padding:34px 30px 26px;
+  box-shadow:var(--shadow);
+  max-width:340px;
+  text-align:center;
+  border-radius:var(--radius);
+  transition:background-color var(--t), box-shadow var(--t), transform var(--t);
+}
+.hero-mark-card:hover{ transform:translateY(-6px); box-shadow:var(--shadow-hover); }
+.hero-mark-card img{
+  width:100%;
+  max-width:230px;
+  margin:0 auto 14px;
+  border-radius:10px;
+}
+.hero-mark-caption{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  border-top:1px dashed var(--border-color);
+  padding-top:12px;
+  transition:color var(--t), border-color var(--t);
+}
+
+@media (max-width:860px){
+  .hero-inner{ grid-template-columns:1fr; }
+  .hero-mark{ order:-1; }
+  .hero-mark-card{ max-width:260px; }
+}
+
+/* ==========================================================================
+   5. SECTION SCAFFOLD
+   ========================================================================== */
+section{
+  position:relative;
+  z-index:1;
+  padding-top:var(--section-pad);
+  padding-bottom:var(--section-pad);
+}
+.section-head{
+  max-width:640px;
+  margin-bottom:44px;
+}
+.section-head .eyebrow{ margin-bottom:14px; }
+.section-head h2{
+  font-size:clamp(1.8rem,3vw,2.5rem);
+  line-height:1.15;
+  margin-bottom:14px;
+}
+.section-head p{ color:var(--text-soft); font-size:1.02rem; transition:color var(--t); }
+
+.hairline{
+  border:none;
+  border-top:1px solid var(--border-color);
+  margin:0;
+  transition:border-color var(--t);
+}
+
+/* reveal-on-scroll (gentle fade only, no flashy motion) */
+.reveal{
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.is-visible{ opacity:1; transform:translateY(0); }
+
+/* ==========================================================================
+   6. EVENT OVERVIEW — perforated ticket cards
+   FIX: the divider between label and value used to be an absolutely
+   positioned line pinned to a fixed offset from the bottom of the card.
+   Cards with longer wrapped text (e.g. "Topics") could grow taller than
+   that fixed offset, so the line drifted up and crossed the text. The
+   divider is now a normal border-bottom sitting in the document flow
+   under the icon+label group, so it always stays put relative to its
+   own content and never escapes the card, whatever the text length.
+   ========================================================================== */
+.overview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:22px;
+}
+.ticket-card{
+  background:var(--bg-card);
+  box-shadow:var(--shadow);
+  padding:22px 22px 20px;
+  position:relative;
+  border-radius:var(--radius);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  transition:transform var(--t), box-shadow var(--t), background-color var(--t), filter var(--t);
+}
+.ticket-card:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--shadow-hover);
+  filter:brightness(1.02);
+}
+/* gentle tint overlays — translucent, so they adapt automatically to
+   whichever theme's --bg-card is underneath instead of hard-coding a
+   light-only hex per tint */
+.ticket-card.tint-cream{   background:linear-gradient(160deg, rgba(255,255,255,0.5), transparent 60%), var(--bg-card); }
+.ticket-card.tint-saffron{ background:linear-gradient(160deg, rgba(224,122,30,0.12), transparent 60%), var(--bg-card); }
+.ticket-card.tint-green{   background:linear-gradient(160deg, rgba(30,107,68,0.12), transparent 60%), var(--bg-card); }
+.ticket-card.tint-ivory{   background:linear-gradient(160deg, rgba(255,255,255,0.32), transparent 55%), var(--bg-card); }
+
+.ticket-card .tk-icon{
+  width:38px; height:38px;
+  border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(224,122,30,0.13);
+  color:var(--text-accent-saffron);
+  transition:color var(--t), background-color var(--t);
+}
+.ticket-card .tk-icon .icon{ width:19px; height:19px; }
+.ticket-card .tk-head{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding-bottom:14px;
+  border-bottom:1px dashed var(--border-color);
+  transition:border-color var(--t);
+}
+.ticket-card .tk-label{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--text-accent-green);
+  transition:color var(--t);
+}
+.ticket-card .tk-value{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:1.2rem;
+  color:var(--text-primary);
+  line-height:1.3;
+  transition:color var(--t);
+}
+
+/* ==========================================================================
+   7. TIMELINE — the signature "ticket spine" perforation
+   ========================================================================== */
+.timeline{
+  position:relative;
+  padding-left:50px;
+}
+.timeline::before{
+  /* the dashed perforation spine — scoped to the timeline component only,
+     so it never reaches into the overview cards above it */
+  content:"";
+  position:absolute;
+  left:19px; top:6px; bottom:6px;
+  width:0;
+  border-left:2.5px dashed var(--border-color);
+  transition:border-color var(--t);
+}
+.tl-item{
+  position:relative;
+  padding-bottom:44px;
+}
+.tl-item:last-child{ padding-bottom:0; }
+.tl-node{
+  position:absolute;
+  left:-50px;
+  top:2px;
+  width:40px; height:40px;
+  border-radius:50%;
+  background:var(--bg-page);
+  border:2.5px solid var(--saffron);
+  color:var(--text-accent-saffron);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background-color var(--t), color var(--t), transform var(--t), box-shadow var(--t);
+}
+.tl-node .icon{ width:16px; height:16px; }
+.tl-item.is-milestone .tl-node{ border-color:var(--green); color:var(--text-accent-green); }
+.tl-item:hover .tl-node{ transform:scale(1.08); box-shadow:0 6px 16px -6px rgba(23,37,66,0.35); }
+.tl-date{
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-accent-saffron);
+  margin-bottom:6px;
+  transition:color var(--t);
+}
+.tl-item.is-milestone .tl-date{ color:var(--text-accent-green); }
+.tl-title{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:1.25rem;
+  color:var(--text-primary);
+  transition:color var(--t);
+}
+
+/* ==========================================================================
+   8. EVENT DETAILS / FORMAT
+   ========================================================================== */
+.detail-card{ padding:clamp(28px,4vw,44px); }
+.detail-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-hover); }
+.detail-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:18px 32px;
+  margin-top:8px;
+}
+.detail-list li{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  font-size:1rem;
+  color:var(--text-soft);
+  transition:color var(--t);
+}
+.detail-list li .icon{ margin-top:3px; color:var(--green); }
+
+/* ==========================================================================
+   9. REWARDS — highlighted panel
+   ========================================================================== */
+.rewards{
+  background:var(--bg-inverse);
+  color:var(--text-on-inverse);
+  border-radius:var(--radius-lg);
+  padding:clamp(30px,5vw,52px);
+  position:relative;
+  overflow:hidden;
+  transition:background-color var(--t), color var(--t);
+}
+.rewards::before{
+  content:"";
+  position:absolute;
+  right:-80px; top:-80px;
+  width:260px; height:260px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(224,122,30,0.28), transparent 70%);
+}
+.rewards h2{ color:var(--text-on-inverse); }
+.rewards .section-head p{ color:rgba(244,238,223,0.75); }
+.rewards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:22px;
+  position:relative;
+  z-index:1;
+}
+.reward-item{
+  border:1px solid rgba(244,238,223,0.18);
+  border-radius:var(--radius);
+  padding:22px;
+  transition:transform var(--t), background-color var(--t), border-color var(--t);
+}
+.reward-item:hover{ transform:translateY(-6px); background-color:rgba(244,238,223,0.06); }
+.reward-item .r-icon{ color:var(--saffron); margin-bottom:12px; width:22px; height:22px; }
+.reward-item h4{ color:var(--white); font-size:1.05rem; margin-bottom:6px; }
+.reward-item p{ color:rgba(244,238,223,0.72); font-size:0.94rem; }
+
+/* ==========================================================================
+   10. RULES
+   ========================================================================== */
+.rules-list{
+  display:grid;
+  gap:0;
+  border-top:1px solid var(--border-color);
+  transition:border-color var(--t);
+}
+.rules-list li{
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  padding:16px 4px;
+  border-bottom:1px solid var(--border-color);
+  border-radius:10px;
+  transition:border-color var(--t), background-color var(--t);
+}
+.rules-list li:hover{ background-color:var(--bg-card); }
+.rules-list li .r-num{
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--text-accent-saffron);
+  flex:none;
+  width:26px;
+  padding-top:2px;
+  transition:color var(--t);
+}
+.rules-list li p{ color:var(--text-soft); transition:color var(--t); }
+
+/* ==========================================================================
+   11. REGISTRATION CTA BAND
+   ========================================================================== */
+.register-band{
+  text-align:center;
+  padding:clamp(50px,7vw,80px) clamp(24px,6vw,60px);
+  background:var(--bg-card);
+  box-shadow:var(--shadow);
+  border-radius:var(--radius-lg);
+  transition:background-color var(--t), box-shadow var(--t);
+}
+.register-band h2{ font-size:clamp(1.9rem,3.4vw,2.6rem); margin-bottom:12px; }
+.register-band p{ color:var(--text-soft); margin-bottom:30px; transition:color var(--t); }
+.register-note{
+  margin-top:18px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-accent-green);
+  transition:color var(--t);
+}
+
+/* ==========================================================================
+   12. FAQ — accordion, now contained in its own rounded card
+   ========================================================================== */
+.faq-list{
+  background:var(--bg-card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:6px 26px;
+  transition:background-color var(--t), box-shadow var(--t);
+}
+.faq-item{ border-bottom:1px solid var(--border-color); transition:border-color var(--t); }
+.faq-item:last-child{ border-bottom:none; }
+.faq-q{
+  width:100%;
+  background:none;
+  border:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 4px;
+  text-align:left;
+  font-family:var(--font-display);
+  font-size:1.08rem;
+  font-weight:600;
+  color:var(--text-primary);
+  transition:color var(--t);
+}
+.faq-q .plus{
+  flex:none;
+  width:22px; height:22px;
+  position:relative;
+}
+.faq-q .plus::before, .faq-q .plus::after{
+  content:"";
+  position:absolute;
+  background:var(--saffron);
+  transition:transform 0.3s ease;
+}
+.faq-q .plus::before{ left:0; top:50%; width:100%; height:2px; transform:translateY(-50%); }
+.faq-q .plus::after{ top:0; left:50%; width:2px; height:100%; transform:translateX(-50%); }
+.faq-item[aria-expanded="true"] .plus::after{ transform:translateX(-50%) rotate(90deg); opacity:0; }
+.faq-a{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.35s ease, opacity 0.3s ease;
+  opacity:0;
+}
+.faq-a-inner{ padding:0 4px 22px; color:var(--text-soft); max-width:64ch; transition:color var(--t); }
+.faq-item[aria-expanded="true"] .faq-a{ opacity:1; }
+
+/* ==========================================================================
+   13. CONTACT
+   ========================================================================== */
+.contact-card{
+  padding:clamp(28px,4vw,44px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px 40px;
+}
+.contact-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-hover); }
+.contact-block h4{
+  font-size:0.95rem;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  font-family:var(--font-mono);
+  color:var(--text-accent-green);
+  margin-bottom:10px;
+  transition:color var(--t);
+}
+.contact-links{ display:flex; flex-direction:column; gap:8px; }
+.contact-links a{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:var(--text-secondary);
+  font-size:0.98rem;
+  transition:color 0.2s ease, transform 0.2s ease;
+}
+.contact-links a .icon{ width:15px; height:15px; }
+.contact-links a:hover{ color:var(--text-accent-saffron); transform:translateX(3px); }
+@media (max-width:640px){ .contact-card{ grid-template-columns:1fr; } }
+
+/* ==========================================================================
+   14. FOOTER
+   ========================================================================== */
+.site-footer{
+  background:var(--bg-inverse);
+  color:rgba(244,238,223,0.82);
+  padding:56px 0 26px;
+  transition:background-color var(--t);
+}
+.footer-top{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:26px;
+  padding-bottom:30px;
+  border-bottom:1px solid rgba(244,238,223,0.16);
+  margin-bottom:22px;
+}
+.footer-brands{
+  display:flex;
+  align-items:center;
+  gap:22px;
+}
+.footer-brands .yotta-badge{ width:46px; height:46px; background:rgba(244,238,223,0.06); }
+.footer-brands .azadi-mark{ width:52px; height:52px; border-radius:50%; background:var(--white); padding:6px; }
+.footer-brands .azadi-mark img{ width:100%; height:100%; object-fit:contain; }
+.footer-tagline{ font-family:var(--font-display); font-size:1.05rem; color:var(--white); }
+.footer-tagline .yotta-grad{ font-family:var(--font-display); }
+.footer-bottom{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:12px;
+  font-size:12.5px;
+  color:rgba(244,238,223,0.5);
+  font-family:var(--font-mono);
+}
+
+/* ==========================================================================
+   15. UTILITIES
+   ========================================================================== */
+.mt-64{ margin-top:64px; }
+.visually-hidden{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
