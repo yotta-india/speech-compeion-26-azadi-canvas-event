@@ -9,7 +9,7 @@ export default function RegisterBand() {
       <span className="eyebrow" style={{ justifyContent: 'center' }}>Register Now</span>
       <h2>Reserve your spot before registration closes</h2>
       <p>Secure your place in the AZADI CANVAS 2026 Speech / Public Speaking Competition.</p>
-      <a href="https://unstop.com/o/IJ4oapE?lb=useubHuD&utm_medium=Share&utm_source=WhatsApp" target="_blank" rel="noopener noreferrer" className="btn btn-primary">Register <svg className="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg></a>
+      <a href="https://unstop.com/o/IJ4oapE?lb=useubHuD&utm_medium=Share&utm_source=competitions&utm_campaign=Gersiazb65711" target="_blank" rel="noopener noreferrer" className="btn btn-primary">Register <svg className="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg></a>
       <div className="register-note">Registration closes on 18 August</div>
     </div>
   </div>
