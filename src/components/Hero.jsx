@@ -11,7 +11,7 @@ export default function Hero() {
       <span className="subtitle">Part of AZADI CANVAS 2026</span>
       <p className="desc">Express your ideas with confidence, clarity, and purpose. Participate in the AZADI CANVAS 2026 Public Speaking Competition and showcase your communication skills on a national stage.</p>
       <div className="hero-actions">
-        <a href="https://forms.gle/Ha8ZwyczG1L3iy3H7" target="_blank" rel="noopener noreferrer" className="btn btn-primary">Register Now <svg className="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg></a>
+        <a href="https://unstop.com/o/IJ4oapE?lb=useubHuD&utm_medium=Share&utm_source=WhatsApp" target="_blank" rel="noopener noreferrer" className="btn btn-primary">Register Now <svg className="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg></a>
         <a href="https://chat.whatsapp.com/LZR3fqEHea7BMcaExWEbuD?s=cl&p=a&ilr=0" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">Join YOTTA Community <svg className="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg></a>
       </div>
     </div>
